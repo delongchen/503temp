@@ -1,11 +1,17 @@
 <template>
-  <p>{{ height }}</p>
-  <p>{{ chartHeight }}</p>
-  <p>{{ chartWidth }}</p>
+  <svg :width="width" :height="height">
+    <g :transform="translateX">
+
+    </g>
+  </svg>
 </template>
 
 <script>
-import { computed } from 'vue'
+import { translateX, makeChartInfo } from "@/util/defChart";
+import { onMounted } from 'vue'
+
+// import { scaleUtc } from 'd3-scale'
+// import { select } from 'd3-selection'
 
 const def = v => ({ default() {return v}})
 
@@ -15,15 +21,18 @@ export default {
     width: def(500)
   },
   setup(props) {
-    const margin = { left: 20, bottom: 20, right: 60, top: 10 },
-      height = computed(() => props.width * .5),
-      chartWidth = computed(() => props.width - margin.left - margin.right),
-      chartHeight = computed(() => height.value - margin.top - margin.bottom)
+    const { height } = makeChartInfo(props)
+
+    const renderChart = () => {
+    }
+
+    onMounted(() => {
+      renderChart()
+    })
 
     return {
       height,
-      chartWidth,
-      chartHeight
+      translateX
     }
   }
 }
