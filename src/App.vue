@@ -1,15 +1,23 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <p @click="w += 100">hello</p>
+    <temp :width="w"/>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Temp from '@/components/TempChart'
+import {ref} from 'vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Temp
+  },
+  setup() {
+    const w = ref(500)
+
+    return { w }
   }
 }
 </script>
@@ -21,6 +29,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
