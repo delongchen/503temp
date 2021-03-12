@@ -1,13 +1,13 @@
 <template>
-  <div>
-    <p @click="w += 100">hello</p>
+  <div id="app">
+    <p @click="handle">hello</p>
     <temp :width="w"/>
   </div>
 </template>
 
 <script>
 import Temp from '@/components/TempChart'
-import {ref} from 'vue'
+import { reactive, toRefs, onMounted } from 'vue'
 
 export default {
   name: 'App',
@@ -15,9 +15,22 @@ export default {
     Temp
   },
   setup() {
-    const w = ref(500)
+    const state = reactive({
+      w: 500,
+    })
 
-    return { w }
+    const handle = () => {
+      state.w += 100
+    }
+
+    onMounted(() => {
+      state.w = document.getElementById('app').offsetWidth
+    })
+
+    return {
+      ...toRefs(state),
+      handle
+    }
   }
 }
 </script>

@@ -1,38 +1,91 @@
 <template>
-  <svg :width="width" :height="height">
-    <g :transform="translateX">
-
+  <svg
+    :width="width"
+    :height="height"
+    v-show="lineData.length"
+  >
+    <g :transform="translateX" id="g">
+      <g id="xAxis" :transform="`translate(0, ${chartHeight})`"></g>
+      <g id="yAxis"></g>
+      <data-path
+        v-for="(v, k) in lineData"
+        :key="`line-${k}`"
+        :x="xScale"
+        :y="yScale"
+        :line-data="v"
+      />
     </g>
   </svg>
 </template>
 
 <script>
-import { translateX, makeChartInfo } from "@/util/defChart";
-import { onMounted } from 'vue'
+/* vue about */
+import {reactive, toRefs, computed, watchEffect} from 'vue'
+/* this package */
+import {translateX, makeChartInfo} from "@/util/defChart";
+import {parseTempData} from "@/util/temp";
+import {allTempData} from '@/api'
 
-// import { scaleUtc } from 'd3-scale'
-// import { select } from 'd3-selection'
+import DataPath from "@/components/TempChart/DataPath";
+/* d3 about */
+import {scaleLinear} from 'd3-scale'
+import {axisBottom, axisLeft} from 'd3-axis'
+import {select} from 'd3-selection'
 
-const def = v => ({ default() {return v}})
+const def = v => ({default: () => v})
 
 export default {
   name: "TempChart",
+  components: {DataPath},
   props: {
     width: def(500)
   },
   setup(props) {
-    const { height } = makeChartInfo(props)
+    const {height, chartHeight} = makeChartInfo(props),
+      state = reactive({
+        lineData: [],
+        max: 40,
+        min: -10,
+        xLen: 500
+      })
 
+    const xScale = computed(() => scaleLinear()
+      .domain([0, state.xLen])
+      .range([0, props.width])
+    )
+
+    const yScale = computed(() => {
+      return scaleLinear()
+        .domain([state.min - 2, state.max + 2])
+        .range([chartHeight.value, 0])
+      }
+    )
+
+    const xAxisGenerator = computed(() => axisBottom(xScale.value))
+    const yAxisGenerator = computed(() => axisLeft(yScale.value))
+
+    const renderAxis = () => {
+      select('#xAxis').call(xAxisGenerator.value)
+      select('#yAxis').call(yAxisGenerator.value)
+    }
     const renderChart = () => {
+      renderAxis()
     }
 
-    onMounted(() => {
+    allTempData(data => {
+      parseTempData(data, state)
+    })
+    watchEffect(() => {
       renderChart()
     })
 
     return {
+      ...toRefs(state),
       height,
-      translateX
+      translateX,
+      chartHeight,
+      xScale,
+      yScale
     }
   }
 }
