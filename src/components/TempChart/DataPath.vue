@@ -3,15 +3,27 @@
     :d="d"
     :style="{
       fill: 'none',
-      stroke: '#2c3e50',
-      strokeWidth: 1,
-      strokeLinejoin: 'round'
     }"
+    class="data-line"
   />
+  <g @mouseover="pointsHandler">
+    <g
+      v-for="(v, k) in dataToShow"
+      :key="`p-${k}`"
+      :transform="`translate(${x(v[2])}, ${y(v[1])})`"
+      class="data-point"
+    >
+      <circle
+        r="4"
+        :id="`pc-${k}`"
+      />
+      <text :dx="0" :dy="5" v-show="ifShow(v[2])">{{ v }}</text>
+    </g>
+  </g>
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { line } from 'd3-shape'
 
 const def = v => ({default: () => v})
@@ -22,7 +34,7 @@ export default {
     x: { required: true },
     y: { required: true },
     lineData: def([]),
-    cyl: def(6)
+    cyl: def(30)
   },
   setup(props) {
     const dataToShow = computed(() => {
@@ -41,13 +53,36 @@ export default {
       )(dataToShow.value)
     })
 
+    const pcId = ref(0)
+    const ifShow = id => pcId.value === id
+
+    function pointsHandler(ev) {
+      const target = ev.target
+      const t_id = target.id.split('-')
+      const t = t_id[0]
+      if (t === 'pc') pcId.value = +t_id[1]
+      console.log(t_id)
+    }
+
     return {
-      d
+      d,
+      dataToShow,
+      pointsHandler,
+      pcId,
+      ifShow
     }
   }
 }
 </script>
 
 <style scoped>
+.data-line {
+  fill: none;
+  stroke: #2c3e50;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
 
+.data-point {
+}
 </style>

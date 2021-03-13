@@ -24,7 +24,7 @@ export default {
     }
 
     onMounted(() => {
-      state.w = document.getElementById('app').offsetWidth
+      state.w = document.getElementById('app').offsetWidth * 0.9
     })
 
     return {
