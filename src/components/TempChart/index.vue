@@ -1,8 +1,10 @@
 <template>
+  <p>{{ mo }}</p>
   <svg
     :width="width"
     :height="height"
     v-show="lineData.length"
+    @mousemove="handle"
   >
     <g :transform="translateX" id="g">
       <g id="xAxis" :transform="`translate(0, ${chartHeight})`"></g>
@@ -47,6 +49,10 @@ export default {
         max: 40,
         min: -10,
         xLen: 500
+      }),
+      mo = reactive({
+        x: 0,
+        y: 0
       })
 
     const xScale = computed(() => scaleLinear()
@@ -68,6 +74,7 @@ export default {
       select('#xAxis').call(xAxisGenerator.value)
       select('#yAxis').call(yAxisGenerator.value)
     }
+
     const renderChart = () => {
       renderAxis()
     }
@@ -75,9 +82,15 @@ export default {
     allTempData(data => {
       parseTempData(data, state)
     })
+
     watchEffect(() => {
       renderChart()
     })
+
+    const handle = (ev) => {
+      mo.x = ev.x
+      mo.y = ev.y
+    }
 
     return {
       ...toRefs(state),
@@ -85,7 +98,9 @@ export default {
       translateX,
       chartHeight,
       xScale,
-      yScale
+      yScale,
+      handle,
+      mo
     }
   }
 }

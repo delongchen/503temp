@@ -1,29 +1,9 @@
 <template>
-  <path
-    :d="d"
-    :style="{
-      fill: 'none',
-    }"
-    class="data-line"
-  />
-  <g @mouseover="pointsHandler">
-    <g
-      v-for="(v, k) in dataToShow"
-      :key="`p-${k}`"
-      :transform="`translate(${x(v[2])}, ${y(v[1])})`"
-      class="data-point"
-    >
-      <circle
-        r="4"
-        :id="`pc-${k}`"
-      />
-      <text :dx="0" :dy="5" v-show="ifShow(v[2])">{{ v }}</text>
-    </g>
-  </g>
+  <path :d="d" class="data-line"/>
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { line } from 'd3-shape'
 
 const def = v => ({default: () => v})
@@ -53,23 +33,9 @@ export default {
       )(dataToShow.value)
     })
 
-    const pcId = ref(0)
-    const ifShow = id => pcId.value === id
-
-    function pointsHandler(ev) {
-      const target = ev.target
-      const t_id = target.id.split('-')
-      const t = t_id[0]
-      if (t === 'pc') pcId.value = +t_id[1]
-      console.log(t_id)
-    }
-
     return {
       d,
       dataToShow,
-      pointsHandler,
-      pcId,
-      ifShow
     }
   }
 }
@@ -84,5 +50,6 @@ export default {
 }
 
 .data-point {
+  display: none;
 }
 </style>

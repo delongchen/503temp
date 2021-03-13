@@ -1,27 +1,25 @@
 <template>
   <div id="app">
-    <p @click="handle">hello</p>
-    <temp :width="w"/>
+    <temp-now/>
+    <temp-chart :width="w"/>
   </div>
 </template>
 
 <script>
-import Temp from '@/components/TempChart'
+import TempChart from '@/components/TempChart'
+import TempNow from '@/components/TempNow'
 import { reactive, toRefs, onMounted } from 'vue'
 
 export default {
   name: 'App',
   components: {
-    Temp
+    TempChart,
+    TempNow
   },
   setup() {
     const state = reactive({
       w: 500,
     })
-
-    const handle = () => {
-      state.w += 100
-    }
 
     onMounted(() => {
       state.w = document.getElementById('app').offsetWidth * 0.9
@@ -29,7 +27,6 @@ export default {
 
     return {
       ...toRefs(state),
-      handle
     }
   }
 }
