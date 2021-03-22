@@ -62,7 +62,7 @@ export default {
 
     const yScale = computed(() => {
       return scaleLinear()
-        .domain([state.min - 2, state.max + 2])
+        .domain([state.min - 1, state.max + 1])
         .range([chartHeight.value, 0])
       }
     )
@@ -79,9 +79,13 @@ export default {
       renderAxis()
     }
 
-    allTempData(data => {
-      parseTempData(data, state)
-    })
+    const sleep = t => new Promise(resolve => {setTimeout(resolve, t)})
+    const loop = async () => {
+      const w = await allTempData()
+      parseTempData(w, state)
+      await sleep(60000)
+    }
+    (async () => { for (;;) await loop() })()
 
     watchEffect(() => {
       renderChart()

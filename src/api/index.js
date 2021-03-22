@@ -12,7 +12,7 @@ async function fetchOne(name) {
     .then(json => ({ name, json }))
 }
 
-export const allTempData = (cb) => {
+export const allTempData = () => {
   const w = []
   const ps = piName()
     .map(fetchOne)
@@ -22,5 +22,5 @@ export const allTempData = (cb) => {
         .then(data => { w.push(data) })
     }, Promise.resolve())
 
-  ps.then(() => cb(w))
+  return ps.then(() => w)
 }

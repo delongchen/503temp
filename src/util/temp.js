@@ -32,7 +32,7 @@ export function parseTempData(data, state) {
 
   for (const i of parsed) {
     const {max, min, temp} = i
-    state.lineData.push(temp)
+    state.lineData[0] = temp
     MM.min(min)
     MM.max(max)
   }

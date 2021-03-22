@@ -23,6 +23,10 @@ export default {
 
     onMounted(() => {
       state.w = document.getElementById('app').offsetWidth * 0.9
+      document.getElementById('app')
+        .addEventListener('contextmenu', (ev) => {
+          ev.preventDefault()
+        })
     })
 
     return {
