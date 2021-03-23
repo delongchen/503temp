@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { line } from 'd3-shape'
 
 const def = v => ({default: () => v})
@@ -13,17 +13,19 @@ export default {
   props: {
     x: { required: true },
     y: { required: true },
-    lineData: def([]),
+    lineName: def(''),
     cyl: def(30)
   },
   setup(props) {
+    const paths = ref([]),
+        lineData = ref([])
+
     const dataToShow = computed(() => {
       const cyl = props.cyl
-      const li = props.lineData
 
-      return new Array(Math.floor(props.lineData.length / cyl))
+      return new Array(Math.floor(lineData.value.length / cyl))
         .fill(null)
-        .map((_, index) => li[index * cyl])
+        .map((_, index) => lineData.value[index * cyl])
     })
 
     const d = computed(() => {
@@ -33,9 +35,14 @@ export default {
       )(dataToShow.value)
     })
 
+    const path = computed(() => {
+      return paths.value.join('')
+    })
+
     return {
       d,
       dataToShow,
+      path
     }
   }
 }

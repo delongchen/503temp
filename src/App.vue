@@ -8,6 +8,7 @@
 <script>
 import TempChart from '@/components/TempChart'
 import TempNow from '@/components/TempNow'
+
 import { reactive, toRefs, onMounted } from 'vue'
 
 export default {

@@ -16,11 +16,11 @@ export default {
         tempText.value = now.now
       })
 
-    function getNow() {setInterval(flushTemp, 60000)}
+    function getNow() { setInterval(flushTemp, 60000) }
 
     const temp = computed(() => {
-      const t = tempText.value.split('^')
-      return [moment(+t[0]), +t[1]]
+      const [timestamp, t] = tempText.value.split('^')
+      return [moment(+timestamp), +t]
     });
 
     onMounted(() => {

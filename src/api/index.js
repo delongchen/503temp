@@ -1,12 +1,12 @@
 const baseUrl = 'http://5.cdl.pub:11451'
-const piName = () => ['']
+export const piName = () => ['']
 
 const apis = {
   all: '/all',
   new: '/new'
 }
 
-async function fetchOne(name) {
+export function fetchOne(name) {
   return fetch(baseUrl + apis.all + `/${name}`)
     .then(result => result.json())
     .then(json => ({ name, json }))

@@ -14,7 +14,8 @@
     "d3-selection": "^2.0.0",
     "d3-shape": "^2.0.0",
     "moment": "^2.29.1",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "worker-loader": "^3.0.8"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

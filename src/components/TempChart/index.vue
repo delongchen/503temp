@@ -4,7 +4,6 @@
     :width="width"
     :height="height"
     v-show="lineData.length"
-    @mousemove="handle"
   >
     <g :transform="translateX" id="g">
       <g id="xAxis" :transform="`translate(0, ${chartHeight})`"></g>
@@ -25,8 +24,6 @@
 import {reactive, toRefs, computed, watchEffect} from 'vue'
 /* this package */
 import {translateX, makeChartInfo} from "@/util/defChart";
-import {parseTempData} from "@/util/temp";
-import {allTempData} from '@/api'
 
 import DataPath from "@/components/TempChart/DataPath";
 /* d3 about */
@@ -60,11 +57,9 @@ export default {
       .range([0, props.width])
     )
 
-    const yScale = computed(() => {
-      return scaleLinear()
+    const yScale = computed(() => scaleLinear()
         .domain([state.min - 1, state.max + 1])
         .range([chartHeight.value, 0])
-      }
     )
 
     const xAxisGenerator = computed(() => axisBottom(xScale.value))
@@ -79,22 +74,9 @@ export default {
       renderAxis()
     }
 
-    const sleep = t => new Promise(resolve => {setTimeout(resolve, t)})
-    const loop = async () => {
-      const w = await allTempData()
-      parseTempData(w, state)
-      await sleep(60000)
-    }
-    (async () => { for (;;) await loop() })()
-
     watchEffect(() => {
       renderChart()
     })
-
-    const handle = (ev) => {
-      mo.x = ev.x
-      mo.y = ev.y
-    }
 
     return {
       ...toRefs(state),
@@ -103,7 +85,6 @@ export default {
       chartHeight,
       xScale,
       yScale,
-      handle,
       mo
     }
   }
