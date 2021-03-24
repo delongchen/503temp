@@ -1,5 +1,4 @@
 <template>
-  <p>{{ mo }}</p>
   <svg
     :width="width"
     :height="height"
@@ -11,9 +10,7 @@
       <data-path
         v-for="(v, k) in lineData"
         :key="`line-${k}`"
-        :x="xScale"
-        :y="yScale"
-        :line-data="v"
+        :line-name="v"
       />
     </g>
   </svg>
@@ -21,7 +18,14 @@
 
 <script>
 /* vue about */
-import {reactive, toRefs, computed, watchEffect} from 'vue'
+import {
+  reactive,
+  toRefs,
+  computed,
+  watchEffect,
+  provide,
+  readonly
+} from 'vue'
 /* this package */
 import {translateX, makeChartInfo} from "@/util/defChart";
 
@@ -35,21 +39,17 @@ const def = v => ({default: () => v})
 
 export default {
   name: "TempChart",
-  components: {DataPath},
+  components: { DataPath },
   props: {
     width: def(500)
   },
   setup(props) {
     const {height, chartHeight} = makeChartInfo(props),
       state = reactive({
-        lineData: [],
+        lineData: ['a'],
         max: 40,
         min: -10,
         xLen: 500
-      }),
-      mo = reactive({
-        x: 0,
-        y: 0
       })
 
     const xScale = computed(() => scaleLinear()
@@ -61,6 +61,9 @@ export default {
         .domain([state.min - 1, state.max + 1])
         .range([chartHeight.value, 0])
     )
+
+    provide('x', readonly(xScale))
+    provide('y', readonly(yScale))
 
     const xAxisGenerator = computed(() => axisBottom(xScale.value))
     const yAxisGenerator = computed(() => axisLeft(yScale.value))
@@ -83,9 +86,6 @@ export default {
       height,
       translateX,
       chartHeight,
-      xScale,
-      yScale,
-      mo
     }
   }
 }

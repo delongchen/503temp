@@ -5,33 +5,32 @@
 <script>
 import { computed, ref } from 'vue'
 import { line } from 'd3-shape'
+import { injectN } from "@/util/vueAbout";
 
 const def = v => ({default: () => v})
 
 export default {
   name: "DataPath",
   props: {
-    x: { required: true },
-    y: { required: true },
     lineName: def(''),
-    cyl: def(30)
   },
   setup(props) {
+    console.log(props.lineName)
     const paths = ref([]),
-        lineData = ref([])
+        lineData = ref([]),
+        cyl = ref(30),
+        { x, y } = injectN(['x', 'y'])
 
     const dataToShow = computed(() => {
-      const cyl = props.cyl
-
-      return new Array(Math.floor(lineData.value.length / cyl))
+      return new Array(Math.floor(lineData.value.length / cyl.value))
         .fill(null)
-        .map((_, index) => lineData.value[index * cyl])
+        .map((_, index) => lineData.value[index * cyl.value])
     })
 
     const d = computed(() => {
       return (line()
-        .x(d => props.x(d[2]))
-        .y(d => props.y(d[1]))
+        .x(d => x(d[2]))
+        .y(d => y(d[1]))
       )(dataToShow.value)
     })
 
