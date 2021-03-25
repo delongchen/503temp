@@ -1,36 +1,52 @@
 <template>
-  <path :d="d" class="data-line"/>
+  <path
+    :d="d"
+    class="data-line"
+    @mousemove="move"
+    @mouseleave="mouseAddr.show = false"
+    @mouseenter="mouseAddr.show = true"
+  />
+  <circle r="4" :cx="last.cx" :cy="last.cy" fill="red"/>
+  <text
+    :x="mouseAddr.x"
+    :y="mouseAddr.y"
+    v-show="mouseAddr.show"
+  >{{ mouseAddr }}
+  </text>
 </template>
 
 <script>
-import { computed, ref } from 'vue'
-import { line } from 'd3-shape'
-import { injectN } from "@/util/vueAbout";
+import {computed, ref, reactive} from 'vue'
+import {line} from 'd3-shape'
+import {injectN} from "@/util/vueAbout";
 
 const def = v => ({default: () => v})
 
 export default {
   name: "DataPath",
   props: {
-    lineName: def(''),
+    lineData: def([]),
   },
   setup(props) {
-    console.log(props.lineName)
     const paths = ref([]),
-        lineData = ref([]),
-        cyl = ref(30),
-        { x, y } = injectN(['x', 'y'])
+      cyl = ref(60),
+      {x, y} = injectN(['x', 'y']),
+      mouseAddr = reactive({
+        x: 0,
+        y: 0,
+        show: false
+      })
 
     const dataToShow = computed(() => {
-      return new Array(Math.floor(lineData.value.length / cyl.value))
+      return new Array(Math.floor(props.lineData.length / cyl.value))
         .fill(null)
-        .map((_, index) => lineData.value[index * cyl.value])
+        .map((_, index) => props.lineData[index * cyl.value])
     })
 
     const d = computed(() => {
       return (line()
-        .x(d => x(d[2]))
-        .y(d => y(d[1]))
+          .x(d => x.value(d[0]))
+          .y(d => y.value(d[1]))
       )(dataToShow.value)
     })
 
@@ -38,10 +54,27 @@ export default {
       return paths.value.join('')
     })
 
+    const last = computed(() => {
+      const p = props.lineData[0]
+      return {
+        cx: x.value(p[0]),
+        cy: y.value(p[1])
+      }
+    })
+
+    function move(ev) {
+      console.log(ev)
+      mouseAddr.x = ev.x
+      mouseAddr.y = ev.y
+    }
+
     return {
       d,
       dataToShow,
-      path
+      path,
+      last,
+      move,
+      mouseAddr,
     }
   }
 }

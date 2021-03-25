@@ -22,5 +22,5 @@ export {
   makeChartInfo,
   margin,
   translateX,
-  translateY
+  translateY,
 }

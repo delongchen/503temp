@@ -6,18 +6,19 @@ import { MaxMin } from "@/util/MaxMin";
  */
 function parseOne({json: temps}) {
   const MM = new MaxMin()
-  const oneTemp = temps.map((tempRaw, index) => {
+  const oneTemp = temps.map((tempRaw) => {
     const tempStr = tempRaw.split('^', 2),
       time = +tempStr[0],
       temp = +tempStr[1]
 
     MM.all(temp)
-    return [time, temp, index]
+    return [time, temp]
   })
 
   return {
     ...MM.mm(),
-    temp: oneTemp
+    temp: oneTemp,
+    startTime: oneTemp[oneTemp.length - 1][0]
   }
 }
 
@@ -31,10 +32,12 @@ export function parseTempData(data, state) {
   const MM = new MaxMin()
 
   for (const i of parsed) {
-    const {max, min, temp} = i
-    state.lineData[0] = temp
+    const {max, min, temp, startTime} = i
+    state.lines.push(temp)
     MM.min(min)
     MM.max(max)
+    console.log(startTime)
+    state.startTime = startTime
   }
 
   state.max = MM.MAX

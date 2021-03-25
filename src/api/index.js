@@ -1,5 +1,5 @@
 const baseUrl = 'http://5.cdl.pub:11451'
-export const piName = () => ['']
+export const piName = () => ['temp0']
 
 const apis = {
   all: '/all',
@@ -12,7 +12,7 @@ export function fetchOne(name) {
     .then(json => ({ name, json }))
 }
 
-export const allTempData = () => {
+export const allData = () => {
   const w = []
   const ps = piName()
     .map(fetchOne)

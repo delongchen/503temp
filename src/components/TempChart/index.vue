@@ -2,15 +2,15 @@
   <svg
     :width="width"
     :height="height"
-    v-show="lineData.length"
+    v-show="lines.length"
   >
     <g :transform="translateX" id="g">
       <g id="xAxis" :transform="`translate(0, ${chartHeight})`"></g>
       <g id="yAxis"></g>
       <data-path
-        v-for="(v, k) in lineData"
+        v-for="(v, k) in lines"
         :key="`line-${k}`"
-        :line-name="v"
+        :line-data="v"
       />
     </g>
   </svg>
@@ -28,10 +28,12 @@ import {
 } from 'vue'
 /* this package */
 import {translateX, makeChartInfo} from "@/util/defChart";
+import { parseTempData } from "@/util/temp";
+import { allData } from "@/api";
 
 import DataPath from "@/components/TempChart/DataPath";
 /* d3 about */
-import {scaleLinear} from 'd3-scale'
+import {scaleLinear, scaleTime} from 'd3-scale'
 import {axisBottom, axisLeft} from 'd3-axis'
 import {select} from 'd3-selection'
 
@@ -46,14 +48,15 @@ export default {
   setup(props) {
     const {height, chartHeight} = makeChartInfo(props),
       state = reactive({
-        lineData: ['a'],
+        lines: [],
         max: 40,
         min: -10,
-        xLen: 500
+        xLen: 500,
+        startTime: 0
       })
 
-    const xScale = computed(() => scaleLinear()
-      .domain([0, state.xLen])
+    const xScale = computed(() => scaleTime()
+      .domain([Date.now(), state.startTime])
       .range([0, props.width])
     )
 
@@ -73,13 +76,11 @@ export default {
       select('#yAxis').call(yAxisGenerator.value)
     }
 
-    const renderChart = () => {
-      renderAxis()
-    }
-
-    watchEffect(() => {
-      renderChart()
+    allData().then(w => {
+      parseTempData(w, state)
     })
+
+    watchEffect(renderAxis)
 
     return {
       ...toRefs(state),
